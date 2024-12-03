@@ -85,3 +85,13 @@ class Flintlock(Item):
         self.skill = "guns"
         self.verb = "shoot"
         self.verb2 = "shoots"
+
+class Glock_switch(Item):
+    def __init__(self):
+        super().__init__("Glock", 650) #Note: price is in shillings (a silver coin, 20 per pound)
+        self.damage = (10,100)
+        self.firearm = True
+        self.charges = 10
+        self.skill = "guns"
+        self.verb = "shoot"
+        self.verb2 = "shoots"
