@@ -25,6 +25,9 @@ class Island (location.Location):
         display.announce ("arrived at an island", pause=False)
 
 
+
+
+
 class Beach_with_ship (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
@@ -40,8 +43,33 @@ class Beach_with_ship (location.SubLocation):
             self.main_location.end_visit()
 
 
+class Beach_with_treasure (location.SubLocation):
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "beach"
+        self.verbs['east'] = self
+    
+    def enter (self):
+        display.announce ("arrive at the beach. Your ship is at anchor in a small bay to the east")
+        display.announce ("you find a map sticking out the sand, its a Treasue map!")
+
+    def process_verb (self, verb, cmd_list, nouns):
+        if (verb == "west"):
+            display.announce ("You have found the Treasue")
+            Treasure()
+            self.main_location.end_visit()
+        if (verb == "east"):
+            display.announce ("You return to your ship.")
+            self.main_location.end_visit()
+
+
+
+
+
+
+
+
 class Ghost_Ship(Context, event.Event):
-    print("The fog around the ship begins to thicken and ghostly ship peaks through")
     def __init__(self):
         super().__init__()
         self.name = "ghost ship"
@@ -58,17 +86,18 @@ class Ghost_Ship(Context, event.Event):
         self.go = False
     
     def process(self):
-         print("The fog around the ship begins to thicken and ghostly ship peaks through with a ghostly figure in the cockpit")
+         self.result["message"] = "The fog around the ship begins to thicken and ghostly ship peaks through with a ghostly figure in the cockpit"
          monsters = []
          print(self.event)
     
     def process_verb (self, verb, cmd_list, nouns):
         
         if (verb == "approach"):
-            self.result["message"] = "you carefully get closer to the ghost ship and sneak on"
-            Treasue()
+            self.result["message"] = "you carefully get closer to the ghost ship and sneak on and find a shiny test"
+            Treasure()
+            
         if (verb == "flee"): 
-            self.result["message"] = "You try to flee but the ship starts follwing close behind and jump om from there ship"
+            self.result["message"] = "You try to flee but the ship starts follwing close behind and jump on from their ship"
             monsters = [combat.Drowned("Drowned pirate "+str(n)), combat.Ghost_captain("Captain "+str(n))]
             combat.Combat(monsters).combat()
         
@@ -93,16 +122,17 @@ class Ghost_Ship(Context, event.Event):
 
 
 
-
-class Treasue():
+class Treasure:
     def __init__(self):
         self.result = {}
-        self.loot = [items.Cutlass, items.Flintlock, items.Glock_switch]
+        self.loot = [items.Cutlass(), items.Flintlock(), items.Glock_switch()]
         self.reward = random.choice(self.loot)
+        
     
     def open_chest(self):
-        self.result["message"] = "You open the chest slowly to reveal your loot"
-        print(self.reward)
+        display.announce ("You open the chest slowly to reveal your loot")
+        config.the_player.add_to_inventory([self.reward])
+       
 
 
 
